@@ -4,10 +4,10 @@ Just recording down my thoughts as I work on the project.
 Sprint 0 - Notes+Thoughts:
 - fraud-producer -> Data generation (this is replaceable with real transaction system if needed)
 
-- fraud-producer -> Business Logic (ML inference + persistence)
+- fraud-consumer -> Business Logic (ML inference + persistence)
 
 - fraud-common -> Shared contracts
-
+ 
 The multi module system helps because then we can run 5 producers but only 2 consumer instances, you can scale them independently based on load. Being deployed independently, we can deploy a new version of the consumer without needed to touch the producer.
 
 Helpful in keeping the docker images small because the producer doesn't need PostgreSQL driver or the ONNX runtime library. (because it doesn't need to)
@@ -53,3 +53,28 @@ Last note on the prometheus.yml
 host.docker.internal is a special DNS name that allows docker containers to connect to services running on the host machine (Prometheus running on a container will be able to interact with my springboot application running on my laptop ex.)
 
 
+Testing Kafka Connectivity:
+The most basic test is just creating a topic
+(topic is like a category or a feed anme, producers write the messages to a topic and consumers read messages from a topic, I am going to test the transaction topic)
+
+docker exec -it kafka kafka-topics --create --topic transactions --bootstrap-server localhost:9092 --partitions 3 --replication-factor 1
+
+docker exec it kafka: this tells the docker to execute a command inside the container named kafka(the -it makes the command interactive)
+kafka-topics: this is the name of the Kafka script for managing topics
+--create: self explanatory
+--topic transactions: the name of our topic
+--bootstrap-server localhost:9092: this tells the script how to connect to the kafka broker
+--partitions 3: this split the topic into 3 partitions. allowing for parallel processing by consumers which is good for scalability (prob not necessary as I dont have any users lol)
+--replication-factor 1: this basically means that there will be only on copy of our data. In a prod env you would have a higher replication factor for fault tolerance, but since this is a local env 1 is good enough
+
+
+we now need to test the postgresql connectivity 
+
+docker exec -it postgres psql -U fraud_user -d fraud_detection
+docker exec -it postgres : execute command in postgres container
+psql: postgres command line
+-U fraud_user: connect as the user fraud_user (this is defined in docker-compose.yml )
+-d fraud_detection: connect db named fraud_detection, which is also defined
+
+after we connect just run a simple query like:
+SELECT version(); and exit

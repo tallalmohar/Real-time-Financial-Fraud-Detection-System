@@ -37,7 +37,7 @@ services:
     networks:
       - fraud-detection-network
     ports:
-      - "5432:5432"
+            - "5433:5432"
     environment:
       POSTGRES_USER: fraud_user
       POSTGRES_PASSWORD: fraud_pass
