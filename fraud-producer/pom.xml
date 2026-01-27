@@ -14,24 +14,24 @@
     <packaging>jar</packaging>
 
     <dependencies>
-        <!-- Reference to shared common module -->
-		// Producer needs the transaction class to create objects 
-        <dependency>
-            <groupId>com.engineering</groupId>
-            <artifactId>fraud-common</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <!-- Spring Boot Web for REST endpoints and embedded server -->
+        <!-- Spring Boot Starter Web -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!-- Spring Kafka for producing messages -->
+        <!-- Spring Kafka -->
         <dependency>
             <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka</artifactId>
+        </dependency>
+
+        <!-- Reference to shared common module -->
+        <!-- Producer needs the transaction class to create objects -->
+        <dependency>
+            <groupId>com.engineering</groupId>
+            <artifactId>fraud-common</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
         <!-- Lombok for reducing boilerplate code -->
@@ -53,12 +53,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.engineering</groupId>
-            <artifactId>fraud-common</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-            </dependencies>
+    </dependencies>
 
     <build>
         <plugins>

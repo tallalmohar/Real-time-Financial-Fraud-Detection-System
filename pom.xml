@@ -18,59 +18,23 @@
 
     <properties>
         <java.version>21</java.version>
+        <onnxruntime.version>1.17.1</onnxruntime.version>
     </properties>
+
     <dependencyManagement>
         <dependencies>
-            <!-- Spring Boot Starter Web -->
-            <!-- neccesary for building web applications (tomcat server etc) -->
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-web</artifactId>
-            </dependency>
-            <!-- Spring Kafka -->
-            <!-- core library for integrating spring apps with Apache Kafka-->
-
-            <dependency>
-                <groupId>org.springframework.kafka</groupId>
-                <artifactId>spring-kafka</artifactId>
-            </dependency>
-            <!-- Spring Data JPA -->
-            <!-- Simplifies database using the JPA-->
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-data-jpa</artifactId>
-            </dependency>
-            <!-- PostgreSQL Driver -->
-            <!-- the JDBC driver that allows the java app to connect to postgresql db-->
-            <dependency>
-                <groupId>org.postgresql</groupId>
-                <artifactId>postgresql</artifactId>
-                <version>42.7.1</version>
-            </dependency>
-            <!-- Lombok (we all know what this is)-->
-            <dependency>
-                <groupId>org.projectlombok</groupId>
-                <artifactId>lombok</artifactId>
-                <version>1.18.32</version>
-                <scope>provided</scope>
-            </dependency>
-            <!-- ONNX Runtime for ML models -->
-            <!-- runtime libarary from microsoft will use later for fraud detection-->
             <dependency>
                 <groupId>com.microsoft.onnxruntime</groupId>
                 <artifactId>onnxruntime</artifactId>
-                <version>1.17.1</version>
+                <version>${onnxruntime.version}</version>
             </dependency>
-            <!-- Prometheus for metrics -->
-            <!-- integrate my app mertrics with prometheus (allows for 
-            us to see the heal and performance)-->
-            <dependency>
-                <groupId>io.micrometer</groupId>
-                <artifactId>micrometer-registry-prometheus</artifactId>
-            </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.30</version> 
+            <scope>provided</scope>
+</dependency>
         </dependencies>
-
-
     </dependencyManagement>
 
     <modules>

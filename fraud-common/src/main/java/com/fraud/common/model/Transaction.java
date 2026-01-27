@@ -16,6 +16,7 @@ LifeCyle:
 @NoArgsConstructor
 @AllArgsConstructor
 public class Transaction{
+
     private String transactionID;
     private String userId;
     private BigDecimal amount; //monetary val of transaction

@@ -81,3 +81,19 @@ SELECT version(); and exit
 
 Sprint 1 - Thoughts + notes
 Sprint 1 comprieses of creating a springboot application that consistently generates realistic and random financial transactions and sends them to a Kafka Topic.
+
+Transaction Data Model 
+This hellps us create a shared model between the producer and consumer so both can understand the data passed between them.
+
+TransactionGenerator.java is needed so it can produce the transaction data for my application. This will be usefull later in testing when I want to stress test.
+
+Spring framework -> it works here because this is a service (class that contains business logic)
+
+faker library for fake transaction, this was very useful actually in generating realistic fake data.
+
+application.properties - this file is the standard for springboot app to store its config settings, need to put server ports , db connections and kafka connections 
+
+kakfa serializers in applications.properties -> when we send the transaction object to kafka. it needs to converted to stream of bytes (serializers duh!) here we tell kafka how to preform the conversion for the key and value fo the message, JSON STRINGS SUPRISE!
+just a quick review of what each one means (just look at the file if you are confused): key-serializer (simple string for our message key so string serializer) value-serializer: JsonSerializer converst my POJO into a JSON String
+
+Implementing the kafka producer

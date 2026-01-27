@@ -54,13 +54,11 @@
         </dependency>
 
         <!-- ONNX Runtime for ML model inference -->
-		// fire dependency allows to load ML model file 
-		// create tensors from java arrays and run inference and get pridictions back
-		
+        <!-- fire dependency allows to load ML model file -->
+        <!-- create tensors from java arrays and run inference and get pridictions back-->
         <dependency>
             <groupId>com.microsoft.onnxruntime</groupId>
             <artifactId>onnxruntime</artifactId>
-            <version>1.16.3</version>
         </dependency>
 
         <!-- Micrometer for metrics -->
