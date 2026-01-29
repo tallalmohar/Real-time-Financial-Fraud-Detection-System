@@ -110,29 +110,91 @@ TESTED! the Kafkaproducerservice works and sends fake transaction's to the Kafka
 example:
 {"transactionID":"af3a49bb-b930-4dc7-8db4-b7ef47073611","userId":"6007-2249-8567-0443","amount":214.92,"merchantId":"Stark Inc","timestamp":null,"location":null,"paymentMethod":null}
 
-
 Next step: I need to implement the fraud-consumer service that listens to these "transaction" topic, processes each transaction through a ML model and determines if it's fraudulent
 
 we have already made the fraud producer spring app, now we need a spring app for our consumer.
-likewise with our producers application.properties file we need to add some deserializers 
+likewise with our producers application.properties file we need to add some deserializers
 
 ONNX Runtime Dependency
-This allows java applications to load and run ml models 
+This allows java applications to load and run ml models
 
 @KafkaListener annotation automatically:
 -Polls the kafka topics in the background
 -deserializes json messages into transaction pojos
 -calls method for each message
--handles the offset commits 
+-handles the offset commits
 -manages connection failures and retries
-
 
 How this will all work: (Subject to change if too confusing or unecessary!!)
 
-- This is the entry point for all the messages from kafka 
+- This is the entry point for all the messages from kafka
 - Every transaction produced by fraud-producer will flow through a method
-- this is where you will call fraud detection service 
+- this is where you will call fraud detection service
 - before implementing the fraud dectection service i can just log the recieved transaction
-fraud-dection-group (if i run multiple instances of fraud consumer with the same group-id 
-kafka can automatically distribute the messages)
+  fraud-dection-group (if i run multiple instances of fraud consumer with the same group-id
+  kafka can automatically distribute the messages)
+
+We need to build a proper OnnxModelConfig because we want a solution where a model is run onnce at startup and shared across all requests
+Springs @Bean : IOC -> creates exactly one instance, the benefit of this is that all services get the same loaded model (not new copies)
+
+ONNX Runtime Components
+OrtEnvironment - methods
+
+- Global ONNX runtime environment
+- One per application
+  OrtSession - methods
+- the loaded ML model
+- resuable for all prediction
+  OrtSession.SessionOptions - methods
+- Configuration for how to load the model
+- Controls CPU/GPU usage, threading
+
+OnnxModelConfig.java
+the purpose of the this class is to create a ONNX env (the runtime engine)
+Load the model file from your resources
+Return an OrtSession -> the loaded model ready for predictions
+handles error if the model file is corrupted or missing
+
+inside OnnxModelConfig.java
+
+we run the OrtEnvironment to run the ML model
+we use classpath and then read the entire file into mem as a byte array
+we use bytes because ONNX models are binary files and the ONNX runtime expects the raw binary data
+
+Feature engineering service
+the purpose of this service would be to turn my transaction onejct into a numerical array that the model can easily undrstand
+
+convert this
+Transaction {
+transactionID: "TXN-12345"
+amount: $450.50
+merchantId: "AMAZON"
+timestamp: 2026-01-29 14:30:00
+location: "New York"
+paymentMethod: "CREDIT_CARD"
+}
+
+into
+float[] features = [0.045, 14, 3, 0, 2, 789, 432]
+↑ ↑ ↑ ↑ ↑ ↑ ↑
+amount hour day weekend payment merchant location
+(normalized) (encoded) (hash) (hash)
+
+The flow of the application so far
+
+1- Kafka message -> TransactionConsumer receives Transaction Object
+2- FeatureEngineeringService.extractFeatures(transaction)
+3- the method above returns float[] array
+4- FraudDetectionService uses this for ML interference
+
+features[0] -> this is the amount nomalized (keeps the values between 0-1 ) models train better this way
+features[1] -> hors of the day
+features[2] -> day of the week
+features[3] -> binary feature for weekend dection
+features[4] -> payment methods encoded
+features[5] -> merchant hash -> converts merchant name to a consisten number
+features[5] -> location has (same logic as merchat)
+
+
+fraud detection service
 
