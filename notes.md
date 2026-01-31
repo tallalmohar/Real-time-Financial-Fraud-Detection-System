@@ -382,3 +382,77 @@ activate python env
 source ml-env/bin/activate
 
 deactivate
+
+
+explore_data.py -> it reads my creditcard.csv file and validates if it loaded properly 
+- This ensures that the data quality before training 
+-counts the legitimate vs fraudulent transactions 
+(proves we need a SMOTE/class weights - i cant train on imabalnce directly)
+
+produces 4 PNG files in  data/figures/ :
+class_distribution.png - fraud vs legitimate counts
+time_analysis.png - transactions by hour
+amount_analysis.png - amount distributions
+feature_correlation.png - which features matter most
+
+
+train_model.py
+1 - loads data 
+2 - split data (creates train 64%),validation 16% and test 20% 
+3 - Apply SMOTE - balances training data 
+4 - Train the model with 100 trees
+5 -  Tests on validation and test set with proper metric
+6 - feature improtances (shows what features matters most)
+7 - Save Model - saves .pkl file for later ONNX conversion
+
+first training:
+
+======================================================================
+✅ TRAINING COMPLETE!
+======================================================================
+
+📁 Generated files:
+   - models/fraud_model.pkl (trained model)
+   - models/model_metadata.pkl (metrics & config)
+   - models/feature_names.txt (feature reference)
+   - models/confusion_matrix.png
+   - models/roc_curve.png
+   - models/feature_importance.png
+
+🎯 Model Performance Summary:
+   Precision: 0.5772
+   Recall:    0.8776
+   F1-Score:  0.6964
+   ROC-AUC:   0.9785
+
+
+  
+catches 88% of all the fraud exceeding the 85% target
+however precision is bad 57.72 percent meaning i have a 42% fast positive rate 
+
+Fix: increase the max_depth to 15-20 meaning more complex trees, also add class_weights='balanced_subsample'
+
+second training:
+======================================================================
+✅ TRAINING COMPLETE!
+======================================================================
+
+📁 Generated files:
+   - models/fraud_model.pkl (trained model)
+   - models/model_metadata.pkl (metrics & config)
+   - models/feature_names.txt (feature reference)
+   - models/confusion_matrix.png
+   - models/roc_curve.png
+   - models/feature_importance.png
+
+🎯 Model Performance Summary:
+   Precision: 0.7830
+   Recall:    0.8469
+   F1-Score:  0.8137
+   ROC-AUC:   0.9799
+
+
+   the files produces that i need to use is the models/fraud_model.onnx 
+   this is the java-ready model
+
+   models/FEATURE_ORDER.md (this is the documentation of rhte java integration)
